@@ -27,6 +27,11 @@ Route::get('/board/{threadId}', \App\Http\Controllers\Board\ThreadController::cl
 Route::post('/board/{threadId}', \App\Http\Controllers\Board\WriteController::class)
     ->name('write'); // 既に存在しているスレッドに書き込み
 
+Route::get('/board/update/w-{writeId}', \App\Http\Controllers\Board\Update\IndexController::class)
+    ->name('update.index'); // 書き込みを編集※Todo：ログイン限定
+Route::put('/board/update/w-{writeId}', \App\Http\Controllers\Board\Update\PutController::class)
+    ->name('update.put'); // 書き込み更新処理
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');

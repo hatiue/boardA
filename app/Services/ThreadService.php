@@ -45,23 +45,35 @@ class ThreadService
     // スレッドタイトル一覧
     public function getAllThreads(): array
     {
-        $all_threads = Thread::get();
+        // スレッドタイトル一覧を取得
+        $all_threads = Thread::orderBy('updated_at', 'DESC')->get(); // Write側からupdated_atを更新：thread()に実装済
+        
+        // レス数（タイトル横に表示させる）
+        $all_writes = Write::get();
+        $count_writes = $all_writes->countBy('thread_id');
+
+        /* 最終更新が近い順に書き込みデータを取得する UPDATEの使用で不要に
+        $all_writes_desc = $all_writes->sortByDesc('updated_at'); // $all_writes->groupBy('thread_id')->sortByDesc('updated_at');
+        $group_writes = $all_writes_desc->groupBy('thread_id'); // 使えるがちょっと不安
+        foreach ($group_writes as $key => $group_write) {
+            $updateds[$key] = $group_write[0]->updated_at;
+        }
+        */
+
         $array = [];
         foreach ($all_threads as $thread) {
             $array[] = [
                 "id" => $thread->id,
                 "title" => $thread->title,
-                "time" => $thread->updated_at
+                "time" => $thread->updated_at ?? "なし",
+                "count" => $count_writes[$thread->id] ?? 0 // 書き込みがなければ0、今はエラーなどで存在しているため代入
             ];
         }
-
-        $sortBy = array_column($array, "time"); // ソートの基準
-        array_multisort($sortBy, SORT_DESC, $array); // updateの最新順に並べかえてくれる
 
         return $array;
     }
 
-    // スレッド別ページ用のデータを返す $request->route()でのidの取得について138ページ周辺で見たはずだが元の記載が見つけられない
+    // スレッド別ページ用のデータを返す 一部90ページ参照
     public function thread($threadId): array
     {
         // コントローラの引数にルートのパラメータ(threadId)を入れて使えるようにしている
@@ -81,10 +93,12 @@ class ThreadService
 
             $array[] = [
                 "num" => $num,
-                "content" => $write->content,
+                "write_id" => $write->id,
+                "content" => $write->content ?? "削除されました（仮）",
                 // "user_id" => $write->user_id,
                 "name" => $name,
                 "created_at" => $write->created_at,
+                "updated_at" => $write->updated_at,
                 // "imgpath" => $write->imgpath,
                 // "ip_address" => $write->ip_address,
             ];
@@ -111,26 +125,22 @@ class ThreadService
             $thread->flg_not_writable = 0;
             $thread->save();
 
-                // リレーションを設定する前のコード
-                // $latest_threadId = Thread::latest('id')->select('id')->first(); // 最終行(最新)のidを取得
-                // $threadId = $latest_threadId["id"];
-
             // ログインしているならユーザーIDを取得
             $userId = auth()->id() ?: null;
             // 匿名で書き込むならフラグ
-            $flg = $request->flg_anonymous() == "on" ? 1 : 0; // checkboxのvalueが設定されていない場合、"on"が送信されるらしい
+            $flg = $request->flg_anonymous() == "on" ? 1 : 0; // checkboxのvalueが設定されていない場合、"on"が送信される
 
             $write = new Write;
             $write->content = $request->content();
             $write->ip_address = $request->ip();
             $write->user_id = $userId;
             $write->flg_anonymous = $flg;
-                //$write->thread_id = $threadId; // リレーションを設定する前のコード
             $write->thread_id = $thread->id; // 親スレッドへの関連付け
             $threadId = $thread->id;
             $write->save();
             DB::commit();
         } catch (Exception $e) {
+            // Todo:メッセージを返す
             DB::rollBack();
         }
 
@@ -144,8 +154,8 @@ class ThreadService
             DB::beginTransaction();
             // ログインしているならユーザーIDを取得
             $userId = auth()->id() ?: null;
-            // 匿名で書き込むならフラグ
-            $flg = $request->flg_anonymous() == "on" ? 1 : 0; // checkboxのvalueが設定されていない場合、"on"が送信されるらしい
+            // 匿名で書き込むならフラグ(falseでユーザー名※未)
+            $flg = $request->flg_anonymous() == "on" ? 1 : 0; // checkboxのvalueが設定されていない場合、"on"が送信される
 
             $write = new Write;
             $write->content = $request->content();
@@ -154,9 +164,12 @@ class ThreadService
             $write->flg_anonymous = $flg;
             $write->thread_id = $threadId;
             $write->save();
+            // 更新時間の反映　save()不要
+            Thread::where('id', $write->thread_id)->update(['updated_at' => $write->updated_at]);
+
             DB::commit();
         } catch (Exception $e) {
-            DB::rollBack();
+            DB::rollBack(); // Todo:何かメッセージ
         }
     }
 }

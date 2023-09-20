@@ -1,10 +1,30 @@
 <x-header></x-header>
 <body>
     <h2>スレタイ一覧とスレ立てのページ</h2>
+    <div>
+        メモ1
+        <ul>
+            <li>スレッドに新規書き込みがあるとスレッドタイトルが上にくる</li>
+            <li>書き込みを編集した場合、更新時間も表示される</li>
+        </ul>
+        メモ2
+        <ul>
+            <li>削除処理</li>
+            <li>会員登録画面</li>
+            <li>エラーメッセージ</li>
+            <li>編集まわりをauthで囲う</li>
+        </ul>
+    </div>
     <x-new-thread></x-new-thread>
     <div>
         @foreach($threads as $thread)
-            <a href={{ route("thread", ["threadId" => $thread["id"]]) }}><h3>{{ $thread["title"] }}</h3></a>
+            <div>
+                <a href="{{ route('thread', ['threadId' => $thread['id']]) }}">
+                    <h3>{{ $thread["title"] . "(" . $thread["count"] . ")" }}</h3>
+                </a>
+                <span>{{ "　最終書き込み：" . $thread["time"] }}</span>
+                
+            </div>
         @endforeach
     </div>
 

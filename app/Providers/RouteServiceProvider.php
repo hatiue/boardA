@@ -24,6 +24,9 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Route::pattern('threadId', '[0-9]+');
+        Route::pattern('writeId', '[0-9]+'); // ['threadId', 'writeId']では通らなかった
+
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
