@@ -13,9 +13,11 @@
 
         
         <div>
-            <p>Todo:↓このチェックボックスは動作確認後authで囲む↓</p>
+            <p>↓ログイン時のみここにチェックボックスが出る↓</p>
+            @auth
             <input id="flg_anonymous" type="checkbox" name="flg_anonymous" checked>
             <label for="flg_anonymous">匿名で書き込む</label>
+            @endauth
         </div>
         
 

@@ -18,6 +18,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// Boardディレクトリ
 Route::get('/board', \App\Http\Controllers\Board\IndexController::class)
     ->name('home');
 Route::post('/board/create', \App\Http\Controllers\Board\CreateController::class)
@@ -26,11 +27,16 @@ Route::get('/board/{threadId}', \App\Http\Controllers\Board\ThreadController::cl
     ->name('thread'); // スレッド個別ページを表示
 Route::post('/board/{threadId}', \App\Http\Controllers\Board\WriteController::class)
     ->name('write'); // 既に存在しているスレッドに書き込み
+Route::delete('/board/delete/w-{writeId}', \App\Http\Controllers\Board\DeleteController::class)
+    ->name('write.delete');
 
-Route::get('/board/update/w-{writeId}', \App\Http\Controllers\Board\Update\IndexController::class)
-    ->name('update.index'); // 書き込みを編集※Todo：ログイン限定
-Route::put('/board/update/w-{writeId}', \App\Http\Controllers\Board\Update\PutController::class)
-    ->name('update.put'); // 書き込み更新処理
+// Board/Updateディレクトリ
+Route::middleware('auth')->group(function () {
+    Route::get('/board/update/w-{writeId}', \App\Http\Controllers\Board\Update\IndexController::class)
+        ->name('update.index'); // 書き込みを編集
+    Route::put('/board/update/w-{writeId}', \App\Http\Controllers\Board\Update\PutController::class)
+        ->name('update.put'); // 書き込み更新処理
+});
 
 Route::get('/dashboard', function () {
     return view('dashboard');

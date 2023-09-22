@@ -1,6 +1,7 @@
 <x-header></x-header>
 <body>
 <!-- 個別編集ページ -->
+@auth
 <h2>ここにスレッドタイトルを表示予定</h2>
     <div>
         <p>投稿内容を編集</p>
@@ -23,5 +24,9 @@
     <button>
         <a href="{{ route('home') }}">トップへ戻る</a>
     </button>
+@endauth
+@guest
+<p>投稿の編集はログイン限定です</p>
+@endguest
 </body>
 <x-footer></x-footer>

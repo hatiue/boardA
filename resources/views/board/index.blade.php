@@ -9,7 +9,7 @@
         </ul>
         メモ2
         <ul>
-            <li>削除処理</li>
+            <li>削除フラグを追加してURLへ直接飛んでも編集不可な状態をつくる</li>
             <li>会員登録画面</li>
             <li>エラーメッセージ</li>
             <li>編集まわりをauthで囲う</li>
@@ -30,27 +30,28 @@
 
 
     <div>
-        ビューコンポーネント0915
+        ビューコンポーネント0922
         <p>作成した</p>
         x-header
         x-footer
         x-new-thread
         x-new-write
-        <p>消した</p>
+        <p>ログインなどに使用するため復活</p>
         x-application-logo
         x-primary-button
-        x-secondary-button
-        x-danger-button
-        x-dropdown-link
-        x-nav-link
-        x-responsive-nav-link
         x-input-label
         x-text-input
-        <p>未使用</p>
+        x-nav-link
+        x-dropdown-link
+        x-responsive-nav-link
+        <p>消していない</p>
         x-auth-session-status
         x-dropdown
         x-input-error
         x-modal
+        <p>消した</p>
+        x-secondary-button
+        x-danger-button
     </div>
 </body>
 <x-footer></x-footer>
