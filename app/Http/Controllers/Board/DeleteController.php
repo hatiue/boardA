@@ -13,13 +13,10 @@ class DeleteController extends Controller
      */
     public function __invoke(Request $request)
     {
-        // 削除→内容が書き換わる　その後編集が不可能になってほしい
         $writeId = (int) $request->route('writeId');
         $write = Write::where('id', $writeId)->firstOrFail();
         $threadId = $write->thread_id; // リダイレクト先のスレッド
-        // $write->delete();
-            // Write::destroy($writeId); // 削除処理はこの1行でもできる
-        $write->content = "この投稿は削除されました。"; // 内容を上書き
+        $write->flg_deleted = 1;
         $write->save();
 
         return redirect()

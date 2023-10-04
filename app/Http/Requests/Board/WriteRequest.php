@@ -36,6 +36,15 @@ class WriteRequest extends FormRequest
         return $this->input('content');
     }
 
+    public function userId(): int | null
+    {
+        // if ($this->user()->id) {
+            return $this->user()->id;
+        // } else {
+        //     return null;
+        // }
+    }
+
     public function flg_anonymous(): string | null
     {
         return $this->input('flg_anonymous');

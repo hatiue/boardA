@@ -27,6 +27,7 @@ class WriteFactory extends Factory
             'ip_address' => '127.0.0.1', // 仮
             'user_id' => null, // 非ログイン状態
             'flg_anonymous' => 1, // 匿名で書き込む（0はログインかつ会員として書き込む）
+            'flg_deleted' => 0, // 削除されていない状態
             'thread_id' => $write_threadId, // 最新のスレッドに書き込む（idが最大、Factoryで同時生成するもの）
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now()

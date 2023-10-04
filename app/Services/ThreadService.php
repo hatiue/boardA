@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Thread;
 use App\Models\Write;
+use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\DB;
 
@@ -79,7 +80,8 @@ class ThreadService
         // コントローラの引数にルートのパラメータ(threadId)を入れて使えるようにしている
         $thread = Thread::where('id', $threadId)->first();
         $writes = Write::where('thread_id', $threadId)->get();
-
+        $users = User::all(); // 配列か何かにして、ループ内で検索させてみる
+        
         $titles = [
             "id" => $thread->id,
             "title" => $thread->title
@@ -89,14 +91,29 @@ class ThreadService
         $num = 1;
         $array = [];
         foreach ($writes as $write) {
-            $name = $write->flg_anonymous ? "名無し" : "会員名"; // Todo:ユーザー名に変更
+            if ($write->flg_deleted === 0) {
+                //$name = $write->flg_anonymous ? "名無し" : "会員名"; // Todo:ユーザー名に変更
+                if ($write->flg_anonymous === 1) {
+                    $name = "名無し";
+                } else {
+                    $name_search = $users->where("id", $write->user_id)->first();
+                    $name = $name_search->name ?? "名前を表示したいが、ユーザーIDの保存ができていないようだ…";
+                    //$name = $write->user->name ?? "名前を表示したいが、ユーザーIDの保存ができていないようだ…"; // null
+
+                }
+                $content = $write->content;
+            } else {
+                $name = "わァ...... ......ぁ....";
+                $content = "消しちゃった!!!";
+            }
 
             $array[] = [
-                "num" => $num,
+                "num" => $num . " : ",
                 "write_id" => $write->id,
-                "content" => $write->content ?? "削除されました（仮）",
-                // "user_id" => $write->user_id,
+                "content" => $content,
+                "user_id" => $write->user_id,
                 "name" => $name,
+                "flg_deleted" => $write->flg_deleted,
                 "created_at" => $write->created_at,
                 "updated_at" => $write->updated_at,
                 // "imgpath" => $write->imgpath,
@@ -127,21 +144,36 @@ class ThreadService
 
             // ログインしているならユーザーIDを取得
             $userId = auth()->id() ?: null;
-            // 匿名で書き込むならフラグ
-            $flg = $request->flg_anonymous() == "on" ? 1 : 0; // checkboxのvalueが設定されていない場合、"on"が送信される
+
+            // 匿名で書き込むか　別メソッドに分離したい
+            if ($userId == null) {
+                // 非ログイン時、匿名になる
+                $flg = 1;
+            } elseif ($userId && $request->flg_anonymous() == "on") {
+                // ログイン時、匿名フラグを立てていれば、匿名になる
+                $flg = 1;
+            } elseif ($userId == null && $request->flg_anonymous() == null) {
+                // ユーザーIDの情報が無い場合、匿名フラグを外していても無効にする※作成現在はこれがある
+                throw new Exception('エラー：ログインしていないため、匿名でしか投稿できません。');
+                // $flg = 1;
+            } else {
+                $flg = 0; // ログイン時、匿名フラグを外していれば、会員名を使用する
+            }
 
             $write = new Write;
             $write->content = $request->content();
             $write->ip_address = $request->ip();
             $write->user_id = $userId;
             $write->flg_anonymous = $flg;
+            $write->flg_deleted = 0;
             $write->thread_id = $thread->id; // 親スレッドへの関連付け
             $threadId = $thread->id;
             $write->save();
             DB::commit();
         } catch (Exception $e) {
-            // Todo:メッセージを返す
             DB::rollBack();
+            echo $e;
+            die;
         }
 
         return $threadId;
@@ -153,15 +185,38 @@ class ThreadService
         try {
             DB::beginTransaction();
             // ログインしているならユーザーIDを取得
+            // auth()->id()が存在しているIDかチェックするのはやりすぎだろうか
             $userId = auth()->id() ?: null;
-            // 匿名で書き込むならフラグ(falseでユーザー名※未)
-            $flg = $request->flg_anonymous() == "on" ? 1 : 0; // checkboxのvalueが設定されていない場合、"on"が送信される
+
+            // 匿名で書き込むか　別メソッドに分離したい
+            if ($userId == null) {
+                // 非ログイン時、匿名になる　DevツールでHTMLを直に編集してinputタグを追加できたためこちらで付け直す
+                $flg = 1;
+
+                /* 動作確認用、非ログイン時に匿名チェックが入力通りになる処理　不要になり次第削除
+                if ($request->flg_anonymous() === "on") {
+                    $flg = 1;
+                } else { 
+                    $flg = 0;
+                }
+                */
+            } elseif ($userId && $request->flg_anonymous() == "on") {
+                // ログイン時、匿名フラグを立てていれば、匿名になる
+                $flg = 1;
+            } elseif ($userId == null && $request->flg_anonymous() == null) {
+                // ユーザーIDの情報が無い場合、匿名フラグを外していても無効にする※作成現在はこれがある
+                throw new Exception('エラー：ログインしていないため、匿名でしか投稿できません。');
+                // $flg = 1;
+            } else {
+                $flg = 0; // ログイン時、匿名フラグを外していれば、会員名を使用する
+            }
 
             $write = new Write;
             $write->content = $request->content();
             $write->ip_address = $request->ip();
             $write->user_id = $userId;
             $write->flg_anonymous = $flg;
+            $write->flg_deleted = 0;
             $write->thread_id = $threadId;
             $write->save();
             // 更新時間の反映　save()不要
@@ -169,7 +224,9 @@ class ThreadService
 
             DB::commit();
         } catch (Exception $e) {
-            DB::rollBack(); // Todo:何かメッセージ
+            DB::rollBack();
+            echo $e;
+            die;
         }
     }
 }

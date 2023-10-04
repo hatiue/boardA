@@ -13,4 +13,9 @@ class Write extends Model
     {
         return $this->belongsTo(Thread::class);
     }
+
+    public function users()
+    {
+        return $this->belongsTo(User::class)->withDefault();
+    }
 }

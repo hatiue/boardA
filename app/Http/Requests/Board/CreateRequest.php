@@ -27,11 +27,6 @@ class CreateRequest extends FormRequest
         ];
     }
 
-    public function threadId(): int
-    {
-        return $this->threadId; // ?
-    }
-
     public function title(): string
     {
         return $this->input('title');
@@ -41,6 +36,13 @@ class CreateRequest extends FormRequest
     {
         return $this->input('content');
     }
+
+    /* スレッド一覧のテーブルには不要
+    public function userId(): int
+    {
+        return $this->user()->id;
+    }
+    */
 
     public function flg_anonymous(): string | null
     {

@@ -15,18 +15,16 @@
                     <span>更新時間：{{ $elem["updated_at"] }}</span>
                 @endif
             </p>
-            @if ($elem["content"] !==  "この投稿は削除されました。")
-                <!-- 完全一致の投稿があると削除と同一処理になる、ボタンを隠しても直接URLを触れば編集できてしまう（たぶん） -->
-                <!-- 削除（編集不可）フラグを追加する？ -->
-                @auth
+            @auth
+                @if ($elem["flg_deleted"] == 0 && auth()->id() == $elem["user_id"])
                     <a href="{{ route('update.index', ['writeId' => $elem['write_id']]) }}">編集</a>
-                @endauth
-            @endif
-            <form action="{{ route('write.delete', ['writeId' => $elem['write_id']]) }}" method="post">
-                @method('DELETE')    
-                @csrf
-                <button type="submit">削除</button>
-            </form>
+                    <form action="{{ route('write.delete', ['writeId' => $elem['write_id']]) }}" method="post">
+                        @method('DELETE')    
+                        @csrf
+                        <button type="submit">削除</button>
+                    </form>
+                @endif
+            @endauth
         </div>
     @endforeach
     <x-new-write threadId="{{ $thread[0]['id'] }}"></x-new-write>
