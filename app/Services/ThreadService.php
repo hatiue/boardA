@@ -113,6 +113,7 @@ class ThreadService
                 "content" => $content,
                 "user_id" => $write->user_id,
                 "name" => $name,
+                "flg_anonymous" => $write->flg_anonymous,
                 "flg_deleted" => $write->flg_deleted,
                 "created_at" => $write->created_at,
                 "updated_at" => $write->updated_at,
@@ -122,6 +123,10 @@ class ThreadService
             $num++;
          }
 
+         // 書き込み上限について
+         // 3つ目の要素にレス数入れてテンプレ@ifで指定数以下ならフォーム表示
+         // 別途テーブル側もレス数確認して書き込めないように制御、確認作業考えるとこっちが先か
+         
          $array_thread = [$titles, $array];
          return $array_thread;
     }
@@ -180,8 +185,16 @@ class ThreadService
     }
 
     // スレッドに書き込む
-    public function writeToThread($request, $threadId): void
+    public function writeToThread($request, $threadId, $upperLimit): void
     {
+        // スレッドの書き込み数上限に達していたら書き込めないようにする
+        // とりあえず5で動作チェック
+        $total = Write::where('thread_id', $threadId)->count();
+        if ($total >= $upperLimit) {
+            return;
+        }
+        unset($total); // この後使わないので
+
         try {
             DB::beginTransaction();
             // ログインしているならユーザーIDを取得

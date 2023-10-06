@@ -17,6 +17,14 @@ class IndexController extends Controller
         $writeId = (int) $request->route('writeId'); // スレ別連番では無いのでかなり分かりにくい
 
         $write = Write::where('id', $writeId)->firstOrFail();
+
+        // 匿名フラグが立っていたら編集不可、URL直打ちでも働くこと確認済み
+        if ($write->flg_anonymous == 1) {
+            return redirect()
+                ->route('thread', ['threadId' => $write->thread_id])
+                ->with("feedback.failure", "匿名で投稿したため、編集することができません(Indexコントローラ側)");
+        }
+
         return view('board.update')->with('write', $write);
     }
 }

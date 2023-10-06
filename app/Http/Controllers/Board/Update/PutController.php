@@ -14,8 +14,18 @@ class PutController extends Controller
      */
     public function __invoke(UpdateRequest $request)
     {
-        // Todo:サービスクラスに移植
+        
         $write = Write::where('id', $request->id())->firstOrFail();
+
+        /*
+        // 匿名フラグが立っていたら編集不可、IndexControllerで事足りている
+        if ($write->flg_anonymous == 1) {
+            return redirect()
+                ->route('thread', ['threadId' => $write->thread_id])
+                ->with("feedback.failure", "匿名で投稿したため、編集することができません(Putコントローラ側)");
+        }
+        */
+
         $write->content = $request->content();
         $write->save();
         Thread::where('id', $write->thread_id)->update(['updated_at' => $write->updated_at]);
