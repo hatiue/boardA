@@ -10,37 +10,11 @@ use Illuminate\Support\Facades\DB;
 
 class ThreadService
 {
-    // すべてのスレッドタイトルと書き込みを取得、スレッド別に整形してから※未使用
-    public function getAllThreadsAndWrites(): array
+    // スレッドの書き込み上限を設定する　適宜都合の良い数値に変更
+    public function upperLimit(): int
     {
-        $all_threads = Thread::get();
-        $all_writes = Write::get();
-
-        $array = [];
-        foreach ($all_threads as $thread) {
-            // スレッド別の連番
-            $num = 1;
-            foreach ($all_writes as $write) {
-                if($thread->id == $write->thread_id) { // スレッドのIDと一致する書き込み情報を配列に格納する
-                    // 名前
-                    if ($write->flg_anonymous === 1) {
-                        $array[$thread->title][$num]["name"] = "名無し";
-                    } else {
-                        $array[$thread->title][$num]["name"] = "ユーザー名"; // Todo:実際のユーザー名に書き換える
-                    }
-                    // 書き込み時間
-                    $array[$thread->title][$num]["created_at"] = $write->created_at;
-                    // 内容
-                    $array[$thread->title][$num]["content"] = $write->content;
-                    // imgpath、編集後時間、IPアドレス取得省略
-                    // $array[$thread->title][$num]["imgpath"] = $write->imgpath;
-                    // $array[$thread->title][$num]["updated_at"] = $write->updated_at;
-                    // $array[$thread->title][$num]["ip_address"] = $write->ip_address;
-                    $num++;
-                }
-            }
-        }
-        return $array;
+        // Controller(Create,Thread,Write)で使用
+        return 10;
     }
 
     // スレッドタイトル一覧
@@ -122,10 +96,6 @@ class ThreadService
             ];
             $num++;
          }
-
-         // 書き込み上限について
-         // 3つ目の要素にレス数入れてテンプレ@ifで指定数以下ならフォーム表示
-         // 別途テーブル側もレス数確認して書き込めないように制御、確認作業考えるとこっちが先か
          
          $array_thread = [$titles, $array];
          return $array_thread;
@@ -188,7 +158,6 @@ class ThreadService
     public function writeToThread($request, $threadId, $upperLimit): void
     {
         // スレッドの書き込み数上限に達していたら書き込めないようにする
-        // とりあえず5で動作チェック
         $total = Write::where('thread_id', $threadId)->count();
         if ($total >= $upperLimit) {
             return;
@@ -198,9 +167,11 @@ class ThreadService
         try {
             DB::beginTransaction();
             // ログインしているならユーザーIDを取得
-            // auth()->id()が存在しているIDかチェックするのはやりすぎだろうか
             $userId = auth()->id() ?: null;
-
+            if ($userId) { // 存在しないidならModelNotFoundExceptionを投げる、ただ検証できていない
+                User::where('id', $userId)->firstOrFail();
+            }
+            
             // 匿名で書き込むか　別メソッドに分離したい
             if ($userId == null) {
                 // 非ログイン時、匿名になる　DevツールでHTMLを直に編集してinputタグを追加できたためこちらで付け直す

@@ -36,7 +36,7 @@
         <x-new-write threadId="{{ $thread[0]['id'] }}"></x-new-write>
     @else
         <div style="color: red;">
-            <p>{{ $upperLimit }}が書き込み上限らしくって、書き込みフォームが表示できないです</p>
+            <p>{{ $upperLimit }}が書き込み上限に設定されているため、書き込みフォームが表示できません</p>
             <p>トップに戻って次のスレッドを立てましょう！</p>
         </div>
     @endif

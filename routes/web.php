@@ -27,15 +27,14 @@ Route::get('/board/{threadId}', \App\Http\Controllers\Board\ThreadController::cl
     ->name('thread'); // スレッド個別ページを表示
 Route::post('/board/{threadId}', \App\Http\Controllers\Board\WriteController::class)
     ->name('write'); // 既に存在しているスレッドに書き込み
-Route::delete('/board/delete/w-{writeId}', \App\Http\Controllers\Board\DeleteController::class)
-    ->name('write.delete');
 
-// Board/Updateディレクトリ
 Route::middleware('auth')->group(function () {
     Route::get('/board/update/w-{writeId}', \App\Http\Controllers\Board\Update\IndexController::class)
-        ->name('update.index'); // 書き込みを編集
+        ->name('update.index'); // 編集
     Route::put('/board/update/w-{writeId}', \App\Http\Controllers\Board\Update\PutController::class)
-        ->name('update.put'); // 書き込み更新処理
+        ->name('update.put'); // 更新処理
+    Route::delete('/board/delete/w-{writeId}', \App\Http\Controllers\Board\DeleteController::class)
+        ->name('write.delete'); // 削除
 });
 
 Route::get('/dashboard', function () {

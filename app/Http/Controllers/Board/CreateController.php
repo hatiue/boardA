@@ -13,10 +13,12 @@ class CreateController extends Controller
      */
     public function __invoke(CreateRequest $request, ThreadService $threadService)
     {
+        // スレッドの書き込み上限
+        $upperLimit = $threadService->upperLimit();
         // 新規スレッドの情報をDBに保存後、新規スレッドのIDを受け取る
         $threadId = $threadService->createNewThread($request);
         // 立てたスレッドのページへ遷移
         $thread = $threadService->thread($threadId);
-        return view('board.thread')->with('thread', $thread);
+        return view('board.thread')->with(["thread" => $thread, "upperLimit" => $upperLimit]);
     }
 }

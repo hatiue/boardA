@@ -12,12 +12,10 @@ class ThreadController extends Controller
      */
     public function __invoke(ThreadService $threadService, $threadId)
     {
-        // スレッドの書き込み上限を設定
-        $upperLimit = 5; // WriteControllerから直にコピペしているので、どこかで共通化させたい
+        // スレッドの書き込み上限を取得
+        $upperLimit = $threadService->upperLimit();
 
-        // スレッド個別ページを表示
         $thread = $threadService->thread($threadId);
-        // return view('board.thread')->with('thread', $thread);
         return view('board.thread')->with(["thread" => $thread, "upperLimit" => $upperLimit]);
     }
 }
