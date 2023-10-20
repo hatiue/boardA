@@ -1,58 +1,40 @@
 <x-header></x-header>
-<body>
-    <h2>スレタイ一覧とスレ立てのページ</h2>
-    <div>
-        メモ1
-        <ul>
-            <li>スレッドに新規書き込みがあるとスレッドタイトルが上にくる</li>
-            <li>書き込みを編集した場合、更新時間も表示される</li>
-            <li>削除した時間が更新時間になる</li>
-            <li>編集ボタンは会員名で書き込んだもののみ表示（ログイン時）</li>
-            <li>書き込み上限時、テキストボックスを非表示に（保存処理も不可）</li>
-        </ul>
-        メモ2
-        <ul>
-            <li>エラーメッセージ</li>
-            <li>書き込み上限数の設定を1箇所で行いたい</li>
-        </ul>
-    </div>
-    <x-new-thread></x-new-thread>
-    <div>
-        @foreach($threads as $thread)
+    <div class="min-h-screen flex flex-col">
+        <div class="container mx-auto">
             <div>
-                <a href="{{ route('thread', ['threadId' => $thread['id']]) }}">
-                    <h3>{{ $thread["title"] . "(" . $thread["count"] . ")" }}</h3>
-                </a>
-                <span>{{ "　最終書き込み：" . $thread["time"] }}</span>
-                
+                <h2 class="text-xl">スレタイ一覧とスレ立てのページ</h2>
+                <div class="my-2">
+                    <p class="font-medium">メモ1</p>
+                    <ul class="list-disc border border-gray-200 px-6 py-1">
+                        <li>スレッドに新規書き込みがあるとスレッドタイトルが上にくる</li>
+                        <li>書き込みを編集した場合、更新時間も表示される</li>
+                        <li>削除した時間が更新時間になる</li>
+                        <li>編集ボタンは会員名で書き込んだもののみ表示（ログイン時）</li>
+                        <li>書き込み上限時、テキストボックスを非表示に（保存処理も不可）</li>
+                    </ul>
+                    <p class="font-medium">メモ2</p>
+                    <ul class="list-disc border border-gray-200 px-6 py-1">
+                        <li>エラーメッセージ</li>
+                        <li>全投稿に画像の添付を可能に、（あとで）会員のみ複数投稿(仮)と削除を可能にする</li>
+                        <li>後でclassのborderは基本的に外す</li>
+                    </ul>
+                </div>
             </div>
-        @endforeach
+            <x-new-thread></x-new-thread>
+            <div>
+                @foreach($threads as $thread)
+                    <div>
+                        <p class="text-lg underline underline-offset-4">
+                            <a href="{{ route('thread', ['threadId' => $thread['id']]) }}">
+                                {{ $thread["title"] . "(" . $thread["count"] . ")" }}
+                            </a>
+                        </p>
+                        <span class="text-sm">{{ "最終書き込み：" . $thread["time"] }}</span>
+                    </div>
+                @endforeach
+            </div>
+        </div>
     </div>
 
-
-    <div>
-        ビューコンポーネント0922
-        <p>作成した</p>
-        x-header
-        x-footer
-        x-new-thread
-        x-new-write
-        <p>ログインなどに使用するため復活</p>
-        x-application-logo
-        x-primary-button
-        x-input-label
-        x-text-input
-        x-nav-link
-        x-dropdown-link
-        x-responsive-nav-link
-        <p>消していない</p>
-        x-auth-session-status
-        x-dropdown
-        x-input-error
-        x-modal
-        <p>消した</p>
-        x-secondary-button
-        x-danger-button
-    </div>
+    <x-footer></x-footer>
 </body>
-<x-footer></x-footer>

@@ -9,7 +9,7 @@
             @method('PUT')
             @csrf
             <textarea type="text" name="content">{{ $write->content }}</textarea>
-            <button type="submit">編集</button>
+            <x-button-updated></x-button-updated>
             @if (session('feedback.success'))
                 <p style="color: green;">{{ session('feedback.success') }}</p>
             @endif
@@ -18,12 +18,8 @@
             @enderror
         </form>
     </div>
-    <button>
-        <a href="{{ route('thread', ['threadId' => $write->thread_id]) }}">スレッドへ戻る</a>
-    </button>
-    <button>
-        <a href="{{ route('home') }}">トップへ戻る</a>
-    </button>
+    <x-button-back :threadId="$write->thread_id"></x-button-back>
+    <x-button-top></x-button-top>
 @endauth
 @guest
 <p>投稿の編集はログイン限定です</p>

@@ -18,6 +18,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// レイアウトを試したりするページ
+Route::get('/try', \App\Http\Controllers\TryCSSController::class)
+    ->name('try');
+
 // Boardディレクトリ
 Route::get('/board', \App\Http\Controllers\Board\IndexController::class)
     ->name('home');

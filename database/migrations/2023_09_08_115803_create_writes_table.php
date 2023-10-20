@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('writes', function (Blueprint $table) {
             $table->id(); // 全書き込みの通し番号
             $table->string('content'); // 書き込み
-            $table->string('imgpath')->nullable(); // 画像パス
+            $table->string('imgpath')->nullable(); // 画像パスの予定だったが交差テーブルの作成で不要になった
             $table->string('ip_address'); // IPアドレス
             $table->foreignId('user_id')->nullable()->constrained(); // ユーザーID、強制ではないためnullable（constrainedの後に書くと無効の模様
             $table->unsignedTinyInteger('flg_anonymous'); // 匿名で書き込むかどうか（ログインユーザーはユーザー名を使用するかどうか選択できる）

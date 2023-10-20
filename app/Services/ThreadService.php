@@ -213,4 +213,57 @@ class ThreadService
             die;
         }
     }
+
+    // 画像を含めたスレッド個別ページのデータを取得する、threadのコピペがベース、作成中
+    public function getThreadWithImages($threadId): array
+    {
+        // コントローラの引数にルートのパラメータ(threadId)を入れて使えるようにしている
+        $thread = Thread::where('id', $threadId)->first();
+        $writes = Write::where('thread_id', $threadId)->with('images')->get(); // withはwhereの後ろでいい？
+        $users = User::all();
+
+        $titles = [
+            "id" => $thread->id,
+            "title" => $thread->title
+        ];
+
+        // 加工して返す
+        $num = 1;
+        $array = [];
+        foreach ($writes as $write) {
+            if ($write->flg_deleted === 0) {
+                //$name = $write->flg_anonymous ? "名無し" : "会員名"; // Todo:ユーザー名に変更
+                if ($write->flg_anonymous === 1) {
+                    $name = "名無し";
+                } else {
+                    $name_search = $users->where("id", $write->user_id)->first();
+                    $name = $name_search->name ?? "名前を表示したいが、ユーザーIDの保存ができていないようだ…";
+                    //$name = $write->user->name ?? "名前を表示したいが、ユーザーIDの保存ができていないようだ…"; // null
+
+                }
+                $content = $write->content;
+            } else {
+                $name = "わァ...... ......ぁ....";
+                $content = "消しちゃった!!!";
+            }
+
+            $array[] = [
+                "num" => $num . " : ",
+                "write_id" => $write->id,
+                "content" => $content,
+                "user_id" => $write->user_id,
+                "name" => $name,
+                "flg_anonymous" => $write->flg_anonymous,
+                "flg_deleted" => $write->flg_deleted,
+                "created_at" => $write->created_at,
+                "updated_at" => $write->updated_at,
+                // "imgpath" => $write->imgpath,
+                // "ip_address" => $write->ip_address,
+            ];
+            $num++;
+         }
+         
+         $array_thread = [$titles, $array];
+         return $array_thread;
+    }
 }

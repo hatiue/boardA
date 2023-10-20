@@ -11,4 +11,10 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+    // これがないと変更が反映されない
+    server: {
+        hmr: {
+            host: 'localhost',
+        },
+    },
 });

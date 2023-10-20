@@ -18,5 +18,7 @@ class ThreadsSeeder extends Seeder
     {
         Thread::factory()->count(1)->create();
         Write::factory()->count(5)->create();
+        // 画像のシーディングは行わない
+        // ->each(fn($write) => Image::factory()->count(4)->create()->each(fn($image => $write->images()->attach($image->id)));
     }
 }

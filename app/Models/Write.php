@@ -18,4 +18,9 @@ class Write extends Model
     {
         return $this->belongsTo(User::class)->withDefault();
     }
+
+    public function images()
+    {
+        return $this->belongsToMany(Image::class, 'write_images')->using(WriteImage::class);
+    }
 }
