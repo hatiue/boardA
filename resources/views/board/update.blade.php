@@ -3,7 +3,6 @@
 <!-- 個別編集ページ -->
 @auth
 <h2>ここにスレッドタイトルを表示予定</h2>
-画像編集コード追加途中のためエラー出ると思われる
     <div>
         <p>投稿内容を編集</p>
         <form action="{{ route('update.put', ['writeId' => $write->id]) }}" method="post">
@@ -19,12 +18,10 @@
             @enderror
         </form>
     </div>
-
-        <form action="{{ route('update.put.image', ['writeId' => $write->id]) }}" method="post" enctype="multipart/form-data">
-            @method('PUT')
-            @csrf
-            <x-images_update :writeId="$write->id" :images="$write->images"></x-images_update>
-        </form>
+    <div>
+        <p>投稿している画像</p>
+        <x-images :images="$write->images"></x-images>
+    </div>
 
     <x-button-back :threadId="$write->thread_id"></x-button-back>
     <x-button-top></x-button-top>
