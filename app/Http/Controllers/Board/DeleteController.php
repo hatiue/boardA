@@ -26,6 +26,7 @@ class DeleteController extends Controller
         }
 
         $write->flg_deleted = 1;
+        // テーブルから本当に削除したい場合はp242参照
         $write->save();
         return redirect()
             ->route('thread', ['threadId' => $threadId])

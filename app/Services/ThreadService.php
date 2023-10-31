@@ -5,8 +5,10 @@ namespace App\Services;
 use App\Models\Thread;
 use App\Models\Write;
 use App\Models\User;
+use App\Models\Image;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class ThreadService
 {
@@ -27,14 +29,6 @@ class ThreadService
         $all_writes = Write::get();
         $count_writes = $all_writes->countBy('thread_id');
 
-        /* 最終更新が近い順に書き込みデータを取得する UPDATEの使用で不要に
-        $all_writes_desc = $all_writes->sortByDesc('updated_at'); // $all_writes->groupBy('thread_id')->sortByDesc('updated_at');
-        $group_writes = $all_writes_desc->groupBy('thread_id'); // 使えるがちょっと不安
-        foreach ($group_writes as $key => $group_write) {
-            $updateds[$key] = $group_write[0]->updated_at;
-        }
-        */
-
         $array = [];
         foreach ($all_threads as $thread) {
             $array[] = [
@@ -48,7 +42,8 @@ class ThreadService
         return $array;
     }
 
-    // スレッド別ページ用のデータを返す 一部90ページ参照
+    /*
+    // スレッド別ページ用のデータを返す→画像データも含むメソッドに変更
     public function thread($threadId): array
     {
         // コントローラの引数にルートのパラメータ(threadId)を入れて使えるようにしている
@@ -100,6 +95,7 @@ class ThreadService
          $array_thread = [$titles, $array];
          return $array_thread;
     }
+    */
 
     // スレ立て、新規スレッドと1番目の書き込みを保存し、作成したスレッドのIDを返す
     public function createNewThread($request): int
@@ -108,7 +104,7 @@ class ThreadService
         /*
          DB::transaction(function(CreateRequest $request) { // コントローラにある間はこちらで動いたのだが…
             // 保存処理
-        });
+            → DB::transaction(function() use (CreateRequest $request) { // p237試していないが、関数外で定義した変数を利用する際にはuse()が必要とのこと
         */
         try {
             DB::beginTransaction();
@@ -144,6 +140,15 @@ class ThreadService
             $write->thread_id = $thread->id; // 親スレッドへの関連付け
             $threadId = $thread->id;
             $write->save();
+
+            foreach ($request->images as $image) {
+                Storage::putFile('public/images', $image);
+                $imageModel = new Image();
+                $imageModel->name = $image->hashName();
+                $imageModel->save();
+                $write->images()->attach($imageModel->id);
+            }
+
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
@@ -174,7 +179,7 @@ class ThreadService
             
             // 匿名で書き込むか　別メソッドに分離したい
             if ($userId == null) {
-                // 非ログイン時、匿名になる　DevツールでHTMLを直に編集してinputタグを追加できたためこちらで付け直す
+                // 非ログイン時、匿名になる　DevツールでHTMLを直に編集してinputタグを追加できるためこちらで付け直す
                 $flg = 1;
 
                 /* 動作確認用、非ログイン時に匿名チェックが入力通りになる処理　不要になり次第削除
@@ -206,6 +211,14 @@ class ThreadService
             // 更新時間の反映　save()不要
             Thread::where('id', $write->thread_id)->update(['updated_at' => $write->updated_at]);
 
+            foreach ($request->images as $image) {
+                Storage::putFile('public/images', $image);
+                $imageModel = new Image();
+                $imageModel->name = $image->hashName();
+                $imageModel->save();
+                $write->images()->attach($imageModel->id);
+            }
+
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
@@ -219,7 +232,7 @@ class ThreadService
     {
         // コントローラの引数にルートのパラメータ(threadId)を入れて使えるようにしている
         $thread = Thread::where('id', $threadId)->first();
-        $writes = Write::where('thread_id', $threadId)->with('images')->get(); // withはwhereの後ろでいい？
+        $writes = Write::with('images')->where('thread_id', $threadId)->get();
         $users = User::all();
 
         $titles = [
@@ -232,19 +245,21 @@ class ThreadService
         $array = [];
         foreach ($writes as $write) {
             if ($write->flg_deleted === 0) {
-                //$name = $write->flg_anonymous ? "名無し" : "会員名"; // Todo:ユーザー名に変更
+                // 削除していない場合
                 if ($write->flg_anonymous === 1) {
                     $name = "名無し";
                 } else {
                     $name_search = $users->where("id", $write->user_id)->first();
                     $name = $name_search->name ?? "名前を表示したいが、ユーザーIDの保存ができていないようだ…";
-                    //$name = $write->user->name ?? "名前を表示したいが、ユーザーIDの保存ができていないようだ…"; // null
 
                 }
                 $content = $write->content;
+                $images = $write->images;
             } else {
+                // 削除済みの場合の表示
                 $name = "わァ...... ......ぁ....";
                 $content = "消しちゃった!!!";
+                $images = []; // $images = ""だとエラー
             }
 
             $array[] = [
@@ -257,13 +272,20 @@ class ThreadService
                 "flg_deleted" => $write->flg_deleted,
                 "created_at" => $write->created_at,
                 "updated_at" => $write->updated_at,
-                // "imgpath" => $write->imgpath,
+                "images" => $images,
                 // "ip_address" => $write->ip_address,
             ];
+            // dd($array);
             $num++;
          }
          
          $array_thread = [$titles, $array];
          return $array_thread;
+    }
+
+    public function putImage($request)
+    {
+            Storage::putFile('public/images', $request->image->name);
+            //画像置き換え（保存し直し コントローラに直に書くかも？
     }
 }

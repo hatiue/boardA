@@ -15,6 +15,10 @@
             <div class="my-1">
                 <p><span>{{ $elem["num"] }}</span><span>{{ $elem["name"] }}</span></p>
                 <p>{{ $elem["content"] }}</p>
+                <div class="border border-dotted">
+                    <p>画像表示枠、無ければ無い</p>
+                    <x-images :images="$elem['images']"></x-images>
+                </div>
                 <p><span>投稿時間：{{ $elem["created_at"] }}</span>
                     @if ($elem["created_at"] != $elem["updated_at"])
                         <span>更新時間：{{ $elem["updated_at"] }}</span>

@@ -4,7 +4,7 @@ namespace App\Http\Requests\Board;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateRequest extends FormRequest
+class UpdateImageRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,7 +22,8 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'content' => 'required|max:256'
+            'images' => 'array|max:4',
+            'images.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:1024'
         ];
     }
 
@@ -31,18 +32,9 @@ class UpdateRequest extends FormRequest
         return (int) $this->route('writeId');
     }
 
-    public function content(): string
-    {
-        return $this->input('content');
-    }
-
-    public function flg_anonymous(): string | null
-    {
-        return $this->input('flg_anonymous');
-    }
-
     public function newImage()
     {
-        return $this->file('newImage');
+        // 名前含めいろいろ不明
+        return $this->file('images', []);
     }
 }

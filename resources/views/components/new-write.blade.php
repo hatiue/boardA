@@ -1,7 +1,7 @@
 <!-- 書き込みフォーム -->
 <div>
     <p class="text-xl font-semibold mt-2">新規書き込み</p>
-    <form action="{{ route('write', ['threadId' => $threadId]) }}" method="post">
+    <form action="{{ route('write', ['threadId' => $threadId]) }}" method="post" enctype="multipart/form-data">
         @csrf
         @error('content')
         <p style="color: red;">{{ $message }}</p>
@@ -14,6 +14,7 @@
             name="content"
             rows="3"
             class="block rounded focus:ring-2 focus:ring-orange-400"></textarea>
+            <x-form.images></x-form.images>
         <div>
             <p>↓ログイン時のみここにチェックボックスが出る↓</p>
             @auth

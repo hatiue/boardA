@@ -18,7 +18,7 @@ class CreateController extends Controller
         // 新規スレッドの情報をDBに保存後、新規スレッドのIDを受け取る
         $threadId = $threadService->createNewThread($request);
         // 立てたスレッドのページへ遷移
-        $thread = $threadService->thread($threadId);
+        $thread = $threadService->getThreadWithImages($threadId);
         return view('board.thread')->with(["thread" => $thread, "upperLimit" => $upperLimit]);
     }
 }

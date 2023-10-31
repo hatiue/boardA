@@ -14,22 +14,11 @@ class PutController extends Controller
      */
     public function __invoke(UpdateRequest $request)
     {
-        
+        // 投稿内容の編集、画像差し替えは別のコントローラ
         $write = Write::where('id', $request->id())->firstOrFail();
-
-        /*
-        // 匿名フラグが立っていたら編集不可、IndexControllerで事足りている
-        if ($write->flg_anonymous == 1) {
-            return redirect()
-                ->route('thread', ['threadId' => $write->thread_id])
-                ->with("feedback.failure", "匿名で投稿したため、編集することができません(Putコントローラ側)");
-        }
-        */
-
         $write->content = $request->content();
         $write->save();
         Thread::where('id', $write->thread_id)->update(['updated_at' => $write->updated_at]);
-
         return redirect()
                 ->route('update.index', ['writeId' => $write->id])
                 ->with('feedback.success', "投稿内容を編集しました");

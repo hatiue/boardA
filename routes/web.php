@@ -37,6 +37,8 @@ Route::middleware('auth')->group(function () {
         ->name('update.index'); // 編集
     Route::put('/board/update/w-{writeId}', \App\Http\Controllers\Board\Update\PutController::class)
         ->name('update.put'); // 更新処理
+    Route::put('/board/update/w-{writeId}-i', \App\Http\Controllers\Board\Update\PutImageController::class)
+        ->name('update.put.image'); // 画像更新処理
     Route::delete('/board/delete/w-{writeId}', \App\Http\Controllers\Board\DeleteController::class)
         ->name('write.delete'); // 削除
 });

@@ -13,6 +13,7 @@
     </style>
     <!-- scriptタグはtypeを追記すると動く -->
     <!-- <script type="module" src="{{ 'resources/js/app.js' }}"></script> -->
+    <script src="https://cdn.tailwindcss.com"></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <title>けいじばん</title>
 </head>

@@ -8,9 +8,16 @@
         @foreach ($images as $image)
             <div class="w-1/6 px-2 my-2">
                 <div class="bg-gray-400">
-                    <a @click="$dispatch('img-modal', { imgModalSrc: '{{ asset('storage/images/' . $image->name) }}' })" class="cursor-pointer">
+                    <a @click="$dispatch('img-modal', { imgModalSrc: '{{ asset('storage/images/' . $image->name) }}' })" class="cursor-pointer" alt="現在の画像">
                         <img alt="{{ $image->name }}" class="object-fit w-full" src="{{ asset('storage/images/' . $image->name) }}">
                     </a>
+                </div>
+
+                <div>
+                    <input type="file" name="newImage">
+                    <button type="submit" class="border-dotted bg-blue-100 rounded-md px-2 py-1">
+                            画像を変更（未実装）
+                    </button>
                 </div>
             </div>
         @endforeach

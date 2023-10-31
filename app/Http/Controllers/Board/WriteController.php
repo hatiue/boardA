@@ -18,7 +18,7 @@ class WriteController extends Controller
         // スレッドに書き込む
         $threadService->writeToThread($request, $threadId, $upperLimit);
         
-        $thread = $threadService->thread($threadId);
+        $thread = $threadService->getThreadWithImages($threadId);
         return view('board.thread')->with(["thread" => $thread, "upperLimit" => $upperLimit]);
     }
 }
