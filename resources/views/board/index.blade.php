@@ -2,7 +2,7 @@
     <div class="min-h-screen flex flex-col">
         <div class="container mx-auto">
             <div>
-                <h2 class="text-xl">スレタイ一覧とスレ立てのページ</h2>
+                
                 <div class="my-2">
                     <p class="font-medium">メモ1</p>
                     <ul class="list-disc border border-gray-200 px-6 py-1">
@@ -16,24 +16,24 @@
                     <p class="font-medium">メモ2</p>
                     <ul class="list-disc border border-gray-200 px-6 py-1">
                         <li>エラーメッセージ</li>
-                        <li>会員のみ画像複数投稿(仮)と削除を可能にする</li>
                         <li>後でclassのborderは基本的に外す</li>
                     </ul>
                 </div>
             </div>
-            <x-new-thread></x-new-thread>
+            <h2 class="text-white text-xl mt-2">スレッド一覧</h2>
             <div>
                 @foreach($threads as $thread)
-                    <div>
-                        <p class="text-lg underline underline-offset-4">
+                    <div class="inline-block">
+                        <span class="text-lg underline underline-offset-4">
                             <a href="{{ route('thread', ['threadId' => $thread['id']]) }}">
                                 {{ $thread["title"] . "(" . $thread["count"] . ")" }}
                             </a>
-                        </p>
-                        <span class="text-sm">{{ "最終書き込み：" . $thread["time"] }}</span>
+                        </span>
+                        <span class="text-sm">{{ "最終：" . $thread["time"] }}</span>
                     </div>
                 @endforeach
             </div>
+            <x-new-thread></x-new-thread>
         </div>
     </div>
 

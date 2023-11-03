@@ -12,9 +12,10 @@
             <p style="color: red;">{{ session('feedback.failure') }}</p>
         @endif
         @foreach($thread[1] as $elem)
-            <div class="my-1">
-                <p><span>{{ $elem["num"] }}</span><span>{{ $elem["name"] }}</span></p>
-                <p>{{ $elem["content"] }}</p>
+            <div id="{{ 'id' . $elem['num'] }}" class="my-1">
+                <p><span>{{ $elem["num"] . "：" }}</span><span>{{ $elem["name"] }}</span></p>
+                <p>{!! $elem["content"] !!}</p>
+                <p>{{ "原文：" . $elem["content"] }}</p>
                 <div class="border border-dotted">
                     <p>画像表示枠、無ければ無い</p>
                     <x-images :images="$elem['images']"></x-images>

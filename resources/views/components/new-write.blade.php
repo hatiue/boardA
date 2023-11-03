@@ -7,12 +7,13 @@
         <p style="color: red;">{{ $message }}</p>
         @enderror
 
-        <label for="content"><span>投稿内容</span></label>
+        <label for="content"><span>投稿内容(256文字まで)</span></label>
         <textarea
             id="content"
             type="text"
             name="content"
             rows="3"
+            maxlength="256"
             class="block rounded focus:ring-2 focus:ring-orange-400"></textarea>
             <x-form.images></x-form.images>
         <div>

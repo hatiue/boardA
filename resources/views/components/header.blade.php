@@ -18,9 +18,8 @@
     <title>けいじばん</title>
 </head>
 <body>
-    <div class="w-full bg-slate-700 sticky top-0">
+    <div class="w-full bg-slate-700 sticky top-0 p-2">
         <div class="container mx-auto text-white">
-            <p>header: viteを使用</p>
             <button class="bg-green-500 rounded p-1"><a href="{{ route('try') }}">cssテストページへ</a></button>
             今は
             @auth

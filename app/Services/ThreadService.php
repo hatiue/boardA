@@ -42,61 +42,6 @@ class ThreadService
         return $array;
     }
 
-    /*
-    // スレッド別ページ用のデータを返す→画像データも含むメソッドに変更
-    public function thread($threadId): array
-    {
-        // コントローラの引数にルートのパラメータ(threadId)を入れて使えるようにしている
-        $thread = Thread::where('id', $threadId)->first();
-        $writes = Write::where('thread_id', $threadId)->get();
-        $users = User::all(); // 配列か何かにして、ループ内で検索させてみる
-        
-        $titles = [
-            "id" => $thread->id,
-            "title" => $thread->title
-        ];
-
-        // 加工して返す
-        $num = 1;
-        $array = [];
-        foreach ($writes as $write) {
-            if ($write->flg_deleted === 0) {
-                //$name = $write->flg_anonymous ? "名無し" : "会員名"; // Todo:ユーザー名に変更
-                if ($write->flg_anonymous === 1) {
-                    $name = "名無し";
-                } else {
-                    $name_search = $users->where("id", $write->user_id)->first();
-                    $name = $name_search->name ?? "名前を表示したいが、ユーザーIDの保存ができていないようだ…";
-                    //$name = $write->user->name ?? "名前を表示したいが、ユーザーIDの保存ができていないようだ…"; // null
-
-                }
-                $content = $write->content;
-            } else {
-                $name = "わァ...... ......ぁ....";
-                $content = "消しちゃった!!!";
-            }
-
-            $array[] = [
-                "num" => $num . " : ",
-                "write_id" => $write->id,
-                "content" => $content,
-                "user_id" => $write->user_id,
-                "name" => $name,
-                "flg_anonymous" => $write->flg_anonymous,
-                "flg_deleted" => $write->flg_deleted,
-                "created_at" => $write->created_at,
-                "updated_at" => $write->updated_at,
-                // "imgpath" => $write->imgpath,
-                // "ip_address" => $write->ip_address,
-            ];
-            $num++;
-         }
-         
-         $array_thread = [$titles, $array];
-         return $array_thread;
-    }
-    */
-
     // スレ立て、新規スレッドと1番目の書き込みを保存し、作成したスレッドのIDを返す
     public function createNewThread($request): int
     {
@@ -141,12 +86,14 @@ class ThreadService
             $threadId = $thread->id;
             $write->save();
 
-            foreach ($request->images as $image) {
-                Storage::putFile('public/images', $image);
-                $imageModel = new Image();
-                $imageModel->name = $image->hashName();
-                $imageModel->save();
-                $write->images()->attach($imageModel->id);
+            if($request->images) {
+                foreach ($request->images as $image) {
+                    Storage::putFile('public/images', $image);
+                    $imageModel = new Image();
+                    $imageModel->name = $image->hashName();
+                    $imageModel->save();
+                    $write->images()->attach($imageModel->id);
+                }
             }
 
             DB::commit();
@@ -211,12 +158,14 @@ class ThreadService
             // 更新時間の反映　save()不要
             Thread::where('id', $write->thread_id)->update(['updated_at' => $write->updated_at]);
 
-            foreach ($request->images as $image) {
-                Storage::putFile('public/images', $image);
-                $imageModel = new Image();
-                $imageModel->name = $image->hashName();
-                $imageModel->save();
-                $write->images()->attach($imageModel->id);
+            if($request->images) {
+                foreach ($request->images as $image) {
+                    Storage::putFile('public/images', $image);
+                    $imageModel = new Image();
+                    $imageModel->name = $image->hashName();
+                    $imageModel->save();
+                    $write->images()->attach($imageModel->id);
+                }
             }
 
             DB::commit();
@@ -253,7 +202,14 @@ class ThreadService
                     $name = $name_search->name ?? "名前を表示したいが、ユーザーIDの保存ができていないようだ…";
 
                 }
-                $content = $write->content;
+                // 本文にアンカーがある場合リンクに置き換える
+                if (preg_match("/>>(\d+)/", $write->content) > 0) {
+                    // エスケープ外して出力するので別の方法を考えたい
+                    $content = preg_replace("/>>(\d+)/", "<a href=\"#id$1\">>>$1</a>", $write->content)
+                                 . '<span class="text-red-500 text-sm">※エスケープを外して出力しているので注意</p>';
+                } else {
+                    $content = $write->content;
+                }
                 $images = $write->images;
             } else {
                 // 削除済みの場合の表示
@@ -263,7 +219,7 @@ class ThreadService
             }
 
             $array[] = [
-                "num" => $num . " : ",
+                "num" => $num,
                 "write_id" => $write->id,
                 "content" => $content,
                 "user_id" => $write->user_id,
@@ -283,9 +239,4 @@ class ThreadService
          return $array_thread;
     }
 
-    public function putImage($request)
-    {
-            Storage::putFile('public/images', $request->image->name);
-            //画像置き換え（保存し直し コントローラに直に書くかも？
-    }
 }
