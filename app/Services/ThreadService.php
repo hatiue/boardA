@@ -204,10 +204,13 @@ class ThreadService
                 }
                 // 本文にアンカーがある場合リンクに置き換える
                 if (preg_match("/>>(\d+)/", $write->content) > 0) {
-                    // エスケープ外して出力するので別の方法を考えたい
-                    $content = preg_replace("/>>(\d+)/", "<a href=\"#id$1\">>>$1</a>", $write->content)
-                                 . '<span class="text-red-500 text-sm">※エスケープを外して出力しているので注意</p>';
+                    // アンカーで区切る
+                    $anchors = preg_split("/>>(\d+)/", $write->content, 0, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+                    // 残った数字がアンカーなのかを判別したいが今は気にしない
+
+                    $content = $anchors;
                 } else {
+                    // アンカーがなければそのまま
                     $content = $write->content;
                 }
                 $images = $write->images;
@@ -231,10 +234,8 @@ class ThreadService
                 "images" => $images,
                 // "ip_address" => $write->ip_address,
             ];
-            // dd($array);
             $num++;
          }
-         
          $array_thread = [$titles, $array];
          return $array_thread;
     }

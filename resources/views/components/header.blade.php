@@ -17,20 +17,19 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <title>けいじばん</title>
 </head>
-<body>
+<body class="flex flex-col min-h-screen">
     <div class="w-full bg-slate-700 sticky top-0 p-2">
         <div class="container mx-auto text-white">
             <button class="bg-green-500 rounded p-1"><a href="{{ route('try') }}">cssテストページへ</a></button>
-            今は
             @auth
-            ユーザーID「{{ auth()->id() }}」、ユーザー名「{{ auth()->user()->name }}」でログイン中 Auth::user()->nameでも表示
-                <form id="logout" action="{{ route('logout') }}" method="post">
+            <span>今はユーザーID「{{ auth()->id() }}」、ユーザー名「{{ auth()->user()->name }}」でログイン中</span>
+                <form id="logout" action="{{ route('logout') }}" method="post" class="inline-flex">
                     @csrf    
                     <x-button-logout></x-button-logout>
                 </form>
             @endauth
             @guest
-            ログインしていません。
+            <span>ログインしていません。</span>
                 <x-button-login></x-button-login>
                 <x-button-register></x-button-register>
             @endguest

@@ -1,8 +1,10 @@
-<footer class="mt-auto w-full bg-slate-700 sticky bottom-0">
-    <div class="container mx-auto text-white">
-        <p>footer: 少ないページだと下にスクロールが発生してしまう</p>
-        <p class="flex justify-end"><a href="#" style="text-decoration: underline;">↑最上部へ↑</a></p>
-        <small class="flex justify-end">コピーライトなど</small>
+<footer class="w-full bg-slate-700">
+    <div class="text-white">
+        <p class="flex justify-end">
+            <a href="#" style="text-decoration: underline;">
+                ↑最上部へ↑
+            </a>
+        </p>
+        <small class="flex justify-center">2023コピーライトなどを表示する部分</small>
     </div>
 </footer>
-</html>
