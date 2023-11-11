@@ -1,6 +1,6 @@
 <!-- スレ立てフォーム -->
-<div class="mt-2">
-    <h2 class="text-white text-xl">新規スレッド作成</h2>
+<div>
+    <h2 class="text-white text-xl font-semibold mt-2">新規スレッド作成</h2>
     <form action="{{ route('create') }}" method="post" enctype="multipart/form-data">
         @csrf
         <label for="title"><span class="font-semibold">スレッドタイトル</span></label>

@@ -1,6 +1,6 @@
 <!-- 書き込みフォーム -->
 <div>
-    <p class="text-xl font-semibold mt-2">新規書き込み</p>
+    <p class="text-white text-xl font-semibold mt-2">新規書き込み</p>
     <form action="{{ route('write', ['threadId' => $threadId]) }}" method="post" enctype="multipart/form-data">
         @csrf
         @error('content')

@@ -39,10 +39,14 @@
 
         
     <p>フレックスボックス</p>
+    <small>
+        フレックスボックスが一次元であることは、フレックスボックスが一つの次元、つまり行か列のいずれかの方向にしかレイアウトしないことを述べています。
+        これは CSS グリッドレイアウトが行と列の二次元を同時に制御するモデルであることと対照的です。
+        https://developer.mozilla.org/ja/docs/Web/CSS/CSS_flexible_box_layout/Basic_concepts_of_flexbox
+    </small>
         <div class="flex">
             
         </div>
 
-    <p>フロート</p>
 </body>
 </html>

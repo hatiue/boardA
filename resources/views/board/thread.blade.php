@@ -4,7 +4,6 @@
 <div class="flex-grow container mx-auto">
     <h2 class="text-xl">{{ $thread[0]["title"] }}</h2>
     
-    <!-- 投稿が元々あった位置に出したいが -->
     @if (session('delete.success'))
         <p style="color: green;">{{ session('delete.success') }}</p>
     @endif
@@ -18,26 +17,28 @@
 
             <div>
                 @if (is_array($elem["content"]))
-                    @foreach ($elem["content"] as $con)
-                        @if (is_numeric($con))
-                            <?php $anc = (int) $con ?>
+                    @foreach ($elem["content"] as $content)
+                        @if (is_numeric($content))
+                            <?php $anchor = (int) $content ?>
                             <p>
-                                <a href={{ "#id" . $anc }}>{{ ">>" . $anc }}</a>
+                                <a href={{ "#id" . $anchor }}>{{ ">>" . $anchor }}</a>
                             </p>
                         @else
-                            <?php //変数名被りでエラーが出たためelem→conに変更した ?>
-                            <span>{{ $con }}</span>
+                            <span>{{ $content }}</span>
                         @endif
                     @endforeach
                 @else
-                    <p>{{ "原文：" . $elem["content"] }}</p>
+                    <p>{{ $elem["content"] }}</p>
                 @endif
             </div>
 
-            <div class="border border-dotted">
-                <p>画像表示枠、無ければ無い</p>
-                <x-images :images="$elem['images']"></x-images>
-            </div>
+            <?php $count_images = count($elem['images']) ?>
+            @if ($count_images > 0)
+                <div class="border border-dotted">
+                    <p class="text-sm">{{ $count_images }}枚の画像</p>
+                    <x-images :images="$elem['images']"></x-images>
+                </div>
+            @endif
             <p><span>投稿時間：{{ $elem["created_at"] }}</span>
                 @if ($elem["created_at"] != $elem["updated_at"])
                     <span>更新時間：{{ $elem["updated_at"] }}</span>

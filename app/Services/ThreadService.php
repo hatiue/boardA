@@ -61,7 +61,7 @@ class ThreadService
             // ログインしているならユーザーIDを取得
             $userId = auth()->id() ?: null;
 
-            // 匿名で書き込むか　別メソッドに分離したい
+            // 匿名で書き込むかどうか
             if ($userId == null) {
                 // 非ログイン時、匿名になる
                 $flg = 1;
@@ -124,18 +124,11 @@ class ThreadService
                 User::where('id', $userId)->firstOrFail();
             }
             
-            // 匿名で書き込むか　別メソッドに分離したい
+            // 匿名で書き込むかどうか
             if ($userId == null) {
-                // 非ログイン時、匿名になる　DevツールでHTMLを直に編集してinputタグを追加できるためこちらで付け直す
+                // 非ログイン時、匿名になる
                 $flg = 1;
 
-                /* 動作確認用、非ログイン時に匿名チェックが入力通りになる処理　不要になり次第削除
-                if ($request->flg_anonymous() === "on") {
-                    $flg = 1;
-                } else { 
-                    $flg = 0;
-                }
-                */
             } elseif ($userId && $request->flg_anonymous() == "on") {
                 // ログイン時、匿名フラグを立てていれば、匿名になる
                 $flg = 1;
@@ -176,7 +169,7 @@ class ThreadService
         }
     }
 
-    // 画像を含めたスレッド個別ページのデータを取得する、threadのコピペがベース、作成中
+    // 画像を含めたスレッド個別ページのデータを取得する
     public function getThreadWithImages($threadId): array
     {
         // コントローラの引数にルートのパラメータ(threadId)を入れて使えるようにしている
@@ -207,7 +200,6 @@ class ThreadService
                     // アンカーで区切る
                     $anchors = preg_split("/>>(\d+)/", $write->content, 0, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
                     // 残った数字がアンカーなのかを判別したいが今は気にしない
-
                     $content = $anchors;
                 } else {
                     // アンカーがなければそのまま
