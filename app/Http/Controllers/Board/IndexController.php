@@ -14,7 +14,7 @@ class IndexController extends Controller
     {
         // ホーム、スレッド一覧
         // $threadService = new ThreadService; // 引数に入れるとnewしなくてよくなる
-        $threads = $threadService->getAllThreads();
+        $threads = $threadService->getAllCurrentThreads();
         return view('board.index')->with('threads', $threads);
     }
 }

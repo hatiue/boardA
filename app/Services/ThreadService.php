@@ -19,11 +19,13 @@ class ThreadService
         return 10;
     }
 
-    // スレッドタイトル一覧
-    public function getAllThreads(): array
+    // スレッドタイトル一覧は現行スレッド・過去スレッドに分かれました
+
+    // 現行スレッドのタイトル一覧
+    public function getAllCurrentThreads(): array
     {
         // スレッドタイトル一覧を取得
-        $all_threads = Thread::orderBy('updated_at', 'DESC')->get(); // Write側からupdated_atを更新：thread()に実装済
+        $all_threads = Thread::where('flg_not_writable', 0)->orderBy('updated_at', 'DESC')->get(); // Write側からupdated_atを更新：thread()に実装済
         
         // レス数（タイトル横に表示させる）
         $all_writes = Write::get();
@@ -38,7 +40,28 @@ class ThreadService
                 "count" => $count_writes[$thread->id] ?? 0 // 書き込みがなければ0、今はエラーなどで存在しているため代入
             ];
         }
+        return $array;
+    }
 
+    // 過去スレッドのタイトル一覧
+    public function getAllPastThreads(): array
+    {
+        // スレッドタイトル一覧を取得
+        $all_threads = Thread::where('flg_not_writable', 1)->orderBy('updated_at', 'DESC')->get(); // Write側からupdated_atを更新：thread()に実装済
+        
+        // レス数（タイトル横に表示させる）
+        $all_writes = Write::get();
+        $count_writes = $all_writes->countBy('thread_id');
+
+        $array = [];
+        foreach ($all_threads as $thread) {
+            $array[] = [
+                "id" => $thread->id,
+                "title" => $thread->title,
+                "time" => $thread->updated_at ?? "なし",
+                "count" => $count_writes[$thread->id] ?? 0 // 書き込みがなければ0、今はエラーなどで存在しているため代入
+            ];
+        }
         return $array;
     }
 
@@ -170,7 +193,7 @@ class ThreadService
     }
 
     // 画像を含めたスレッド個別ページのデータを取得する
-    public function getThreadWithImages($threadId): array
+    public function getThreadWithImages($threadId)
     {
         // コントローラの引数にルートのパラメータ(threadId)を入れて使えるようにしている
         $thread = Thread::where('id', $threadId)->first();
@@ -179,7 +202,8 @@ class ThreadService
 
         $titles = [
             "id" => $thread->id,
-            "title" => $thread->title
+            "title" => $thread->title,
+            "flg_log" => $thread->flg_not_writable
         ];
 
         // 加工して返す

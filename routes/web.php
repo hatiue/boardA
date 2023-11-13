@@ -28,9 +28,13 @@ Route::get('/board', \App\Http\Controllers\Board\IndexController::class)
 Route::post('/board/create', \App\Http\Controllers\Board\CreateController::class)
     ->name('create'); // 新規スレッドを作成後、作成したページへ遷移
 Route::get('/board/{threadId}', \App\Http\Controllers\Board\ThreadController::class)
-    ->name('thread'); // スレッド個別ページを表示
+    ->name('thread'); // スレッド個別ページ
 Route::post('/board/{threadId}', \App\Http\Controllers\Board\WriteController::class)
     ->name('write'); // 既に存在しているスレッドに書き込み
+Route::get('/board/log', \App\Http\Controllers\Board\LogIndexController::class)
+    ->name('log'); // 過去ログ一覧
+Route::get('/board/log/{threadId}', \App\Http\Controllers\Board\PastThreadController::class)
+    ->name('log-thread'); // 過去ログ送りになったスレッド個別ページ
 
 Route::middleware('auth')->group(function () {
     Route::get('/board/update/w-{writeId}', \App\Http\Controllers\Board\Update\IndexController::class)
