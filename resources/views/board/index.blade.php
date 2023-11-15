@@ -12,10 +12,11 @@
                 <li>過去ログ送りになると会員でも編集削除不可に</li>
             </ul>
         </div>
-        URL直打ちだと普通に編集できてしまうので要修正
+
         @if (session("itsPast"))
             <p class="text-red-400">{{ session("itsPast") }}</p>
         @endif
+
         <h2 class="text-white text-xl mt-2">スレッド一覧</h2>
         <div>
             @foreach($threads as $thread)

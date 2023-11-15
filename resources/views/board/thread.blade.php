@@ -2,7 +2,7 @@
 <body>
 <!-- 各スレッド個別ページ -->
 <div class="flex-grow container mx-auto">
-    <h2 class="text-xl">{{ $thread[0]["title"] }}</h2>
+    <h2 class="text-white text-xl mt-2">{{ $thread[0]["title"] }}</h2>
     
     @if (session('delete.success'))
         <p style="color: green;">{{ session('delete.success') }}</p>
@@ -10,8 +10,8 @@
     @if (session('feedback.failure'))
         <p style="color: red;">{{ session('feedback.failure') }}</p>
     @endif
+
     @foreach($thread[1] as $elem)
-    
         <div id="{{ 'id' . $elem['num'] }}" class="my-1">
             <p><span>{{ $elem["num"] . "：" }}</span><span>{{ $elem["name"] }}</span></p>
 
@@ -39,25 +39,29 @@
                     <x-images :images="$elem['images']"></x-images>
                 </div>
             @endif
+
             <p><span>投稿時間：{{ $elem["created_at"] }}</span>
                 @if ($elem["created_at"] != $elem["updated_at"])
                     <span>更新時間：{{ $elem["updated_at"] }}</span>
                 @endif
             </p>
+
             @auth
                 @if ($elem["flg_deleted"] == 0 && auth()->id() == $elem["user_id"])
                     @if ($elem["flg_anonymous"] === 0)
-                        <x-button-update :writeId="$elem['write_id']"></x-button-update>
+                        <x-button-update :writeId="$elem['write_id']" :title="$thread[0]['title']"></x-button-update>
                     @endif
-                    <form action="{{ route('write.delete', ['writeId' => $elem['write_id']]) }}" method="post">
+                    <form action="{{ route('write.delete', ['writeId' => $elem['write_id']]) }}" method="post" class="inline">
                         @method('DELETE')    
                         @csrf
                         <x-button-delete></x-button-delete>
                     </form>
                 @endif
             @endauth
+
         </div>
     @endforeach
+
     @if (count($thread[1]) < $upperLimit)
         <x-new-write threadId="{{ $thread[0]['id'] }}"></x-new-write>
     @else
@@ -66,6 +70,7 @@
             <p>トップに戻って次のスレッドを立てましょう！</p>
         </div>
     @endif
+
     <x-button-top></x-button-top>
 </div>
 <x-footer></x-footer>

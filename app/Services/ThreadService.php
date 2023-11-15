@@ -19,20 +19,20 @@ class ThreadService
         return 10;
     }
 
-    // スレッドタイトル一覧は現行スレッド・過去スレッドに分かれました
+    // スレッドタイトル一覧を取得するメソッドは現行スレッド用と過去スレッド用の2つに分かれました
 
     // 現行スレッドのタイトル一覧
     public function getAllCurrentThreads(): array
     {
         // スレッドタイトル一覧を取得
-        $all_threads = Thread::where('flg_not_writable', 0)->orderBy('updated_at', 'DESC')->get(); // Write側からupdated_atを更新：thread()に実装済
+        $threads_current = Thread::where('flg_not_writable', 0)->orderBy('updated_at', 'DESC')->get(); // Write側からupdated_atを更新：thread()に実装済
         
         // レス数（タイトル横に表示させる）
         $all_writes = Write::get();
         $count_writes = $all_writes->countBy('thread_id');
 
         $array = [];
-        foreach ($all_threads as $thread) {
+        foreach ($threads_current as $thread) {
             $array[] = [
                 "id" => $thread->id,
                 "title" => $thread->title,
@@ -47,14 +47,14 @@ class ThreadService
     public function getAllPastThreads(): array
     {
         // スレッドタイトル一覧を取得
-        $all_threads = Thread::where('flg_not_writable', 1)->orderBy('updated_at', 'DESC')->get(); // Write側からupdated_atを更新：thread()に実装済
+        $threads_log = Thread::where('flg_not_writable', 1)->orderBy('updated_at', 'DESC')->get(); // Write側からupdated_atを更新：thread()に実装済
         
         // レス数（タイトル横に表示させる）
         $all_writes = Write::get();
         $count_writes = $all_writes->countBy('thread_id');
 
         $array = [];
-        foreach ($all_threads as $thread) {
+        foreach ($threads_log as $thread) {
             $array[] = [
                 "id" => $thread->id,
                 "title" => $thread->title,

@@ -16,7 +16,7 @@ class PastThreadController extends Controller
         $thread = $threadService->getThreadWithImages($threadId);
         // 現行スレッドにアクセスした場合、トップへ　ThreadControllerと対
         if ($thread[0]["flg_log"] == 0) {
-            return redirect()->route('log')->with('itsCurrent', "さっき表示させようとしたのは現行のスレッドです※文章仮");
+            return redirect()->route('log')->with('itsCurrent', "さっき表示しようとしたのは現行のスレッドです");
         }
         return view('board.past-thread')->with("thread", $thread);
     }

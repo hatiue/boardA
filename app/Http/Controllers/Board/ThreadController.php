@@ -19,7 +19,7 @@ class ThreadController extends Controller
 
         // 過去ログ送りになったスレッドにアクセスした場合、トップへ　PastThreadControllerと対
         if ($thread[0]["flg_log"] == 1) {
-            return redirect()->route('home')->with('itsPast', "さっき表示させようとしたのは過去ログのスレッドです※文章仮");
+            return redirect()->route('home')->with('itsPast', "さっき表示しようとしたのは過去ログのスレッドです");
         }
 
         return view('board.thread')->with(["thread" => $thread, "upperLimit" => $upperLimit]);
