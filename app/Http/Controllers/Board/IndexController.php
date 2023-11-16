@@ -7,9 +7,6 @@ use App\Services\ThreadService;
 
 class IndexController extends Controller
 {
-    /**
-     * Handle the incoming request.
-     */
     public function __invoke(ThreadService $threadService)
     {
         // ホーム、スレッド一覧

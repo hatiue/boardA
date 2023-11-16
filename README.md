@@ -1,3 +1,5 @@
+## README作成中です
+
 ## 内容
 
 匿名掲示板をイメージしたものです。  
@@ -47,6 +49,7 @@
 下記のコマンドを順に実行
 - cd board
 - ./vendor/bin/sail up -d // アプリケーションコンテナをデーモン起動する
+- ./vendor/bin/sail artisan storage:link // 画像保存用ディレクトリのシンボリックリンクを作成
 - ./vendor/bin/sail artisan migrate // テーブルを作成、初回起動時のみ
 
 ## 5.表示する

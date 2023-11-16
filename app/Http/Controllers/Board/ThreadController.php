@@ -8,9 +8,6 @@ use App\Models\Thread;
 
 class ThreadController extends Controller
 {
-    /**
-     * Handle the incoming request.
-     */
     public function __invoke(ThreadService $threadService, $threadId)
     {
         // スレッドの書き込み上限を取得

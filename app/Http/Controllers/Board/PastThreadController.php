@@ -7,9 +7,6 @@ use App\Services\ThreadService;
 
 class PastThreadController extends Controller
 {
-    /**
-     * Handle the incoming request.
-     */
     public function __invoke(ThreadService $threadService, $threadId)
     {
         // 過去ログ送りになったスレッドの個別ページ

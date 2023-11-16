@@ -6,9 +6,6 @@ use Illuminate\Http\Request;
 
 class TryCSSController extends Controller
 {
-    /**
-     * Handle the incoming request.
-     */
     public function __invoke(Request $request)
     {
         // tailwindなどCSSを試すためのページ

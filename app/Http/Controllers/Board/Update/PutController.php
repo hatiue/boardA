@@ -9,9 +9,6 @@ use App\Models\Write;
 
 class PutController extends Controller
 {
-    /**
-     * Handle the incoming request.
-     */
     public function __invoke(UpdateRequest $request)
     {
         // 投稿内容の編集※本文のみ
